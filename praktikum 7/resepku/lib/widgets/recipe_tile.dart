@@ -1,0 +1,42 @@
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:resepku/models/recipe.dart';
+import 'package:resepku/pages/detail_page.dart';
+import 'package:resepku/providers/favorite_provider.dart';
+import 'package:resepku/widgets/recipe_image.dart';
+
+class RecipeTile extends StatelessWidget {
+  const RecipeTile({super.key, required this.recipe});
+  final Recipe recipe;
+
+  @override
+  Widget build(BuildContext context) {
+    final isFavorite = context.watch<FavoriteProvider>().isFavorite(recipe);
+
+    return ListTile(
+      leading: ClipRRect(
+        borderRadius: BorderRadius.circular(8),
+        child: SizedBox(
+          width: 56,
+          height: 56,
+          child: RecipeImage(url: recipe.image, cacheWidth: 168),
+        ),
+      ),
+      title: Text(recipe.name),
+      subtitle: Text(
+        '${recipe.cuisine} • ${recipe.totalTimeMinutes} menit • ★${recipe.rating}',
+      ),
+      trailing: IconButton(
+        icon: Icon(
+          isFavorite ? Icons.favorite : Icons.favorite_border,
+          color: isFavorite ? Colors.red : null,
+        ),
+        onPressed: () => context.read<FavoriteProvider>().toggle(recipe),
+      ),
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => DetailPage(recipe: recipe)),
+      ),
+    );
+  }
+}
